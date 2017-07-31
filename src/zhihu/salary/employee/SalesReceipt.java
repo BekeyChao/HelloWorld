@@ -7,8 +7,14 @@ import java.time.LocalDate;
  * Created by ASUS on 2017/7/31.
  */
 public class SalesReceipt {
-    private double amount;
-    private LocalDate saleDate;
+    private double amount;  //销售额
+    private LocalDate saleDate; //销售日期
+    //其他属性...
+
+    public SalesReceipt(LocalDate saleDate, double amount) {
+        this.saleDate = saleDate;
+        this.amount = amount;
+    }
 
     public double getAmount() {
         return amount;

@@ -9,6 +9,12 @@ import java.time.LocalDate;
 public class TimeCard {
     private LocalDate date;
     private int hours;
+    //...其他属性
+
+    public TimeCard(LocalDate date,int hours) {
+        this.date = date;
+        this.hours = hours;
+    }
 
     public LocalDate getDate() {
         return date;

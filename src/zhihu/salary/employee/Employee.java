@@ -22,6 +22,7 @@ public class Employee {
     private PayDateUtil payDateUtil;//支付时间抽象类
     private PaymentMethod paymentMethod;//支付方式
     private Reduce reduce;//扣除项
+    //其他属性...
 
     public Employee(String id,String name) {
         this.id = id;

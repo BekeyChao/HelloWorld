@@ -1,8 +1,10 @@
-package com.casic.runoobSpider;
+package runoobSpider;
 
 import org.jsoup.nodes.Element;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * 提供共有方法服务
@@ -46,7 +48,7 @@ public class Service {
     /**
      * 私有方法,解析单个元素并向StringBuilder添加
      */
-    private static void parseEle(StringBuilder markdown,Element ele,int level){
+    private static void parseEle(StringBuilder markdown, Element ele, int level){
         //处理相对地址为绝对地址
         ele.getElementsByTag("a").forEach(it -> it.attr("href",it.absUrl("href")));
         ele.getElementsByTag("img").forEach(it -> it.attr("src",it.absUrl("src")));

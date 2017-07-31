@@ -12,7 +12,7 @@ import us.codecraft.webmagic.selector.Html;
  * 菜鸟教程markdown转换
  * Created by bekey on 2017/6/6.
  */
-public class RunoobPageProcessor implements PageProcessor{
+public class RunoobPageProcessor implements PageProcessor {
     private static String name = null;
     private static String regex = null;
 

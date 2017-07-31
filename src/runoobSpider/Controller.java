@@ -1,26 +1,16 @@
 package runoobSpider;
 
-import us.codecraft.webmagic.ResultItems;
-import us.codecraft.webmagic.Task;
-import us.codecraft.webmagic.pipeline.Pipeline;
-
-import java.io.IOException;
+import us.codecraft.webmagic.Spider;
 
 /**
- * 保存文件功能
+ * 爬虫控制器,main方法入口
  * Created by bekey on 2017/6/6.
  */
-public class MarkdownSavePipeline implements Pipeline {
-    @Override
-    public void process(ResultItems resultItems, Task task) {
-        try {
-
-            String fileName = resultItems.get("fileName");
-            String document = resultItems.get("content");
-            String dir = resultItems.get("dir");
-            Service.saveFile(document,fileName,dir);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+public class Controller {
+    public static void main(String[] args) {
+//        String url = "http://www.runoob.com/regexp/regexp-tutorial.html";
+        //测试通过2017/7/31
+        String url = "http://www.runoob.com/regexp/regexp-tutorial.html";
+        Spider.create(new RunoobPageProcessor()).addUrl(url).addPipeline(new MarkdownSavePipeline()).thread(1).run();
     }
 }

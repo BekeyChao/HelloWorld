@@ -12,14 +12,16 @@ import java.util.Map;
  * Created by ASUS on 2017/7/31.
  */
 public class HourPayClassify implements PayClassify{
-    private double rate;
+    private double rate;//时薪
     private Map<LocalDate, TimeCard> timeCards;
     public HourPayClassify(double hourlyRate) {
         this.rate = hourlyRate;
     }
+
     public void addTimeCard(TimeCard tc){
         timeCards.put(tc.getDate(), tc);
     }
+
     @Override
     public double calculatePay(PayDetail detail) {
         double totalPay = 0;
@@ -31,12 +33,13 @@ public class HourPayClassify implements PayClassify{
         }
         return totalPay;
     }
+    //每日超过12个小时的工时翻倍
     private double calculatePayForTimeCard(TimeCard  tc) {
         int hours = tc.getHours();
         if(hours > 12){
             return 12*rate + (hours-12) * rate * 2;
         } else{
-            return 12*rate;
+            return hours * rate;
         }
     }
 }
