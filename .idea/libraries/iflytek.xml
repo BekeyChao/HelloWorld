@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="iflytek">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../javaLib/iflytek" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/../../javaLib/iflytek" recursive="false" />
+  </library>
+</component>
