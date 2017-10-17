@@ -11,24 +11,24 @@ class iCalendar {
      * @param isLeapMonth boolean 是否闰月 默认false
      */
     constructor(args, month=1, day=1, lunar = false, isLeapMonth = false) {
-        let year = args
+        let year = args;
         //通过prop构造
-        if(typeof args === 'object' &&'year','month','day' in args){
-            year = args.year
-            month = args.month
-            day = args.day
-            lunar = args.lunar
+        if(typeof args === 'object' && args.year && args.month && args.day){
+            year = args.year;
+            month = args.month;
+            day = args.day;
+            lunar = args.lunar;
             isLeapMonth = args.isLeapMonth
         }
         //通过Date构造
         if(args instanceof Date) {
-            year = args.getFullYear()
-            month = args.getMonth() + 1
-            day = args.getDate()
-            lunar = false
+            year = args.getFullYear();
+            month = args.getMonth() + 1;
+            day = args.getDate();
+            lunar = false;
             isLeapMonth = false
         }
-        let _calendar
+        let _calendar;
         //
         if(lunar) {
             _calendar = calendar.lunar2solar(year, month, day, isLeapMonth)
@@ -37,11 +37,12 @@ class iCalendar {
         }
 
         //构造一个农历
-        this._lunarCalendar = new LunarCalendar(_calendar.lYear, _calendar.lMonth, _calendar.lDay,
-            _calendar.isToday, _calendar.isTerm, _calendar.Term,  _calendar.isLeap, _calendar.Animal, this)
+        this._lunarCalendar = new LunarCalendar([_calendar.lYear,_calendar.gzYear], [_calendar.lMonth,_calendar.gzMonth,_calendar.IMonthCn],
+            [_calendar.lDay,_calendar.gzDay,_calendar.IDayCn],
+            _calendar.isToday, _calendar.isTerm, _calendar.Term,  _calendar.isLeap, _calendar.Animal, this);
         //构造一个公历
         this._gregorianCalendar = new GregorianCalendar(_calendar.cYear, _calendar.cMonth, _calendar.cDay,
-            _calendar.isToday, _calendar.isTerm, _calendar.Term, _calendar.nWeek, _calendar.astro, this)
+            _calendar.isToday, _calendar.isTerm, _calendar.Term, [_calendar.nWeek, _calendar.ncWeek], _calendar.astro, this)
     }
 
     /**
@@ -79,6 +80,10 @@ class iCalendar {
 
 }
 
+//为class定义静态属性
+iCalendar.GanZhi = "GanZhi";
+iCalendar.Chinese = "Chinese";
+
 class BaseCalendar {
     /*
     _year    //年
@@ -91,7 +96,7 @@ class BaseCalendar {
 
     constructor(year, month, dayOfMonth, isToday, isTerm, term, parent = null) {
         if(new.target === BaseCalendar)
-            throw new Error("本类不能实例化")
+            throw new Error("本类不能实例化");
         this._year = year;
         this._month = month;
         this._dayOfMonth = dayOfMonth;
@@ -101,8 +106,8 @@ class BaseCalendar {
         this._parent = parent
     }
 
-    getYear() {
-        return this._year;
+    getYear(express = false) {
+        return this._year
     }
 
     getMonth() {
@@ -127,14 +132,44 @@ class BaseCalendar {
 }
 
 class LunarCalendar extends BaseCalendar {
+
     /*
     _animal //生肖
     _isLeapMonth    //是否为闰月
     */
+
     constructor(year, month, dayOfMonth, isToday, isTerm, term, isLeapMonth, animal, parent = null) {
-        super(year, month, dayOfMonth, isToday, isTerm, term, parent)
-        this._isLeapMonth = isLeapMonth
+        super(year, month, dayOfMonth, isToday, isTerm, term, parent);
+        this._isLeapMonth = isLeapMonth;
         this._animal = animal;
+    }
+
+    getYear(express = false) {
+        if(!express)
+            return this._year[0];
+        if(express.toLowerCase() === iCalendar.GanZhi.toLowerCase())
+            return this._year[1];
+        throw new Error("不存在的参数" + express)
+    }
+
+    getMonth(express = false) {
+        if(!express)
+            return this._month[0];
+        if(express.toLowerCase() === iCalendar.GanZhi.toLowerCase())
+            return this._month[1];
+        if(express.toLowerCase() === iCalendar.Chinese.toLowerCase())
+            return this._month[2];
+        throw new Error("不存在的参数" + express)
+    }
+
+    getDayOfMonth(express) {
+        if(!express)
+            return this._month[0];
+        if(express.toLowerCase() === iCalendar.GanZhi.toLowerCase())
+            return this._month[1];
+        if(express.toLowerCase() === iCalendar.Chinese.toLowerCase())
+            return this._month[2];
+        throw new Error("不存在的参数" + express)
     }
 
     /**
@@ -146,7 +181,7 @@ class LunarCalendar extends BaseCalendar {
     }
 
     /**
-     * 返回本日期是否为闰月
+     * 返回本日期是否在闰月
      * @returns {*}
      */
     isLeapMonth() {
@@ -162,11 +197,21 @@ class LunarCalendar extends BaseCalendar {
     }
 
     /**
+     * 返回本月农历天数
+     * @returns {*|Number}
+     */
+    getMaxDaysOfMonth() {
+        if(this.isLeapMonth())
+            return calendar.leapDays(this.getYear())
+        return calendar.monthDays(this.getYear(), this.getMonth())
+    }
+
+    /**
      * @returns {GregorianCalendar}
      */
-    toGergorianCalendar() {
+    toGregorianCalendar() {
         if(this._parent && this._parent instanceof iCalendar)
-            return this._parent.getGregorianCalendar()
+            return this._parent.getGregorianCalendar();
         return new iCalendar(this.getYear(),this.getMonth(),this.getDayOfMonth(),
             true,this.isLeapMonth()).getGregorianCalendar()
     }
@@ -176,7 +221,7 @@ class LunarCalendar extends BaseCalendar {
      * @returns {Date}
      */
     toLocalDate() {
-        return this.toGergorianCalendar().toLocalDate()
+        return this.toGregorianCalendar().toLocalDate()
     }
 
 }
@@ -188,13 +233,16 @@ class GregorianCalendar extends BaseCalendar {
     */
 
     constructor(year, month, dayOfMonth, isToday,  isTerm, term, dayOfWeek, astro, parent = null) {
-        super(year, month, dayOfMonth, isToday,  isTerm, term, parent)
-        this._dayOfWeek = dayOfWeek
+        super(year, month, dayOfMonth, isToday,  isTerm, term, parent);
+        this._dayOfWeek = dayOfWeek;
         this._astro = astro
     }
 
-    getDayOfWeek() {
-        return this._dayOfWeek;
+    getDayOfWeek(express) {
+        if(!express)
+            return this._dayOfWeek[0];
+        if(express.toLowerCase() === iCalendar.Chinese.toLowerCase())
+            return this._dayOfWeek[1];
     }
 
     /**

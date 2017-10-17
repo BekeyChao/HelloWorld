@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>农历公历转换Demo</title>
+</head>
+<link href="bootstrap3.min.css" type="text/css" rel="stylesheet">
+<body>
+    <div id="input" class="container">
+        <h3 class="h3">日期选择器</h3>
+        <div class="input-group">
+            <input class="" type="date" id="date">
+
+            <label>
+                是否为农历
+                <input class="" type="checkbox" id="isLunar">
+            </label>
+
+            <label>
+                是否为闰月
+                <input class="" type="checkbox" id="isLeapMonth">
+            </label>
+            <br/>
+            <button class="btn" onclick="turn()">转换</button>
+        </div>
+    </div>
+    <div id="out">
+
+    </div>
+
+</body>
+<script src="calendar.js"></script>
+<!-- 依赖calendar.js -->
+<script src="iCalendar.js"></script>
+<script>
+    function turn() {
+        let date = document.getElementById("date").valueAsDate;
+        let isLunar = document.getElementById("isLunar");
+        let isLeap = document.getElementById("isLeapMonth")
+
+        console.log([date,isLunar,isLeap])
+
+        let iCal = new iCalendar(date)
+        console.log(iCal)
+    }
+</script>
+</html>
